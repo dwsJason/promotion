@@ -1,0 +1,12 @@
+*.vpw
+*.vpwhist
+*.vtg
+file_io_plugin_samples/.vs/
+file_io_plugin_samples/i256/Debug/
+file_io_plugin_samples/i256/Release/
+*.user
+*.pdb
+*.ipdb
+*.iobj
+*.vpj
+file_io_plugin_samples/simImage/Release/

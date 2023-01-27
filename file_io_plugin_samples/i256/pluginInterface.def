@@ -1,0 +1,29 @@
+
+LIBRARY   I256IO
+
+EXPORTS
+
+
+	initialize
+	setProgressCallback
+	getErrorMessage 
+	getFileTypeId 
+	isReadSupported 
+	isWriteSupported
+	isWriteTrueColorSupported
+	getFileBoxDescription 
+	getFileExtension 
+	setFilename
+	canHandle 
+	loadBasicData 
+	getWidth 
+	getHeight 
+	getImageCount 
+	canExtractPalette 
+	getRgbPalette 
+	getTransparentColor 
+	isAlphaEnabled 
+	loadNextImage
+	beginWrite
+	writeNextImage
+	finishProcessing 

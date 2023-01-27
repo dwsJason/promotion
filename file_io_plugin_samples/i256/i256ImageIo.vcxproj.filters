@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="i256ImageIo.cpp" />
+    <ClCompile Include="lzsa\src\dictionary.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\expand_block_v1.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\expand_block_v2.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\expand_context.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\expand_inmem.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\expand_streaming.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\frame.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\lzsa.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\matchfinder.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\shrink_block_v1.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\shrink_block_v2.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\shrink_context.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\shrink_inmem.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\shrink_streaming.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\stream.c">
+      <Filter>lzsa</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\libdivsufsort\lib\divsufsort.c">
+      <Filter>lzsa\libdivsufsort</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\libdivsufsort\lib\divsufsort_utils.c">
+      <Filter>lzsa\libdivsufsort</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\libdivsufsort\lib\sssort.c">
+      <Filter>lzsa\libdivsufsort</Filter>
+    </ClCompile>
+    <ClCompile Include="lzsa\src\libdivsufsort\lib\trsort.c">
+      <Filter>lzsa\libdivsufsort</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\pluginInterface.h" />
+    <ClInclude Include="i256ImageIo.h" />
+    <ClInclude Include="lzsa\src\dictionary.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\expand_block_v1.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\expand_block_v2.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\expand_context.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\expand_inmem.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\expand_streaming.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\format.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\frame.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\lib.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\matchfinder.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\shrink_block_v1.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\shrink_block_v2.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\shrink_context.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\shrink_inmem.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\shrink_streaming.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\stream.h">
+      <Filter>lzsa</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\libdivsufsort\include\divsufsort.h">
+      <Filter>lzsa\libdivsufsort</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\libdivsufsort\include\divsufsort_config.h">
+      <Filter>lzsa\libdivsufsort</Filter>
+    </ClInclude>
+    <ClInclude Include="lzsa\src\libdivsufsort\include\divsufsort_private.h">
+      <Filter>lzsa\libdivsufsort</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\pluginInterface.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="i256Img.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="lzsa">
+      <UniqueIdentifier>{a3917cf6-492b-42f9-b77c-4446a08411e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lzsa\libdivsufsort">
+      <UniqueIdentifier>{b6f894e2-30e1-40ad-9bb9-33af5c5becd5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
