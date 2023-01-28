@@ -347,8 +347,10 @@ extern "C"
 		if (CurrentFile)
 		{
 			delete CurrentFile;
-			CurrentFile = new I256File(fileHeader.width, fileHeader.height, 256);
+			CurrentFile = nullptr;
 		}
+
+		CurrentFile = new I256File(fileHeader.width, fileHeader.height, 256);
 
 		const I256_Palette& Palette = CurrentFile->GetPalette();
 
