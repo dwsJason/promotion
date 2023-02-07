@@ -360,7 +360,7 @@ extern "C"
 
 			Palette.pColors[idx].r = colorFramePalette[rgbindex+0];
 			Palette.pColors[idx].g = colorFramePalette[rgbindex+1];
-			Palette.pColors[idx].b = colorFramePalette[rgbindex+3];
+			Palette.pColors[idx].b = colorFramePalette[rgbindex+2];
 			Palette.pColors[idx].a = 255; //alphaFramePalette[idx];
 		}
 
