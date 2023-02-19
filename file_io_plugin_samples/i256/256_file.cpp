@@ -38,6 +38,9 @@ I256File::I256File(const wchar_t *pFilePath)
 	m_pal.iNumColors = 0;
 	m_pal.pColors = nullptr;
 
+	//memset(&m_pPixelMaps, 0, sizeof(m_pPixelMaps));
+	//memset(&m_pal, 0, sizeof(m_pal));
+
 	LoadFromFile(pFilePath);
 }
 //------------------------------------------------------------------------------
@@ -48,6 +51,8 @@ I256File::I256File(int iWidthPixels, int iHeightPixels, int iNumColors)
 	, m_heightPixels( iHeightPixels )
 	, m_numColors( iNumColors )
 {
+	//memset(&m_pPixelMaps, 0, sizeof(m_pPixelMaps));
+	//memset(&m_pal, 0, sizeof(m_pal));
 
 	m_pal.iNumColors = iNumColors;
 	m_pal.pColors = new I256_Color[ iNumColors ];

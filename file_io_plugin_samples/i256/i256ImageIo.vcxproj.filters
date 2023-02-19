@@ -59,6 +59,7 @@
     <ClCompile Include="lzsa\src\libdivsufsort\lib\trsort.c">
       <Filter>lzsa\libdivsufsort</Filter>
     </ClCompile>
+    <ClCompile Include="256_file.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\pluginInterface.h" />
@@ -120,6 +121,8 @@
     <ClInclude Include="lzsa\src\libdivsufsort\include\divsufsort_private.h">
       <Filter>lzsa\libdivsufsort</Filter>
     </ClInclude>
+    <ClInclude Include="256_file.h" />
+    <ClInclude Include="bctypes.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\pluginInterface.def" />

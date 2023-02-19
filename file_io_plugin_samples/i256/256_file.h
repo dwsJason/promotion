@@ -117,9 +117,6 @@ typedef struct I256File_CHUNK
 
 } I256File_CHUNK;
 
-#pragma pack(pop)
-
-
 typedef struct I256_Palette
 {
     int iNumColors;
@@ -167,6 +164,8 @@ private:
 	std::vector<unsigned char*> m_pPixelMaps;
 
 };
+
+#pragma pack(pop)
 
 
 #endif // I256_FILE_H
