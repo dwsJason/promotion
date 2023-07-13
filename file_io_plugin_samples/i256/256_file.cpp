@@ -172,7 +172,7 @@ void I256File::SaveToFile(const wchar_t* pFilenamePath)
 		
 		pCLUT->c = 'C'; pCLUT->l = 'L'; pCLUT->u = 'U'; pCLUT->t = 'T';
 		pCLUT->chunk_length = clut_size;
-		pCLUT->num_colors = (unsigned short)(m_pal.iNumColors - 1);
+		pCLUT->num_colors = (unsigned short)(m_pal.iNumColors);
 
 		unsigned char *pBgr = &bytes[ sizeof(I256File_CLUT) + clut_offset ];
 
