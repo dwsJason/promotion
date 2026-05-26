@@ -35,6 +35,16 @@ jobs:
             platform: Win32
             output_dir: file_io_plugin_samples/i16/Release
             artifact: i16ImgIo-Win32
+          - plugin: c1
+            project: c1ImageIo.vcxproj
+            platform: x64
+            output_dir: file_io_plugin_samples/c1/x64/Release
+            artifact: c1ImgIo-x64
+          - plugin: c1
+            project: c1ImageIo.vcxproj
+            platform: Win32
+            output_dir: file_io_plugin_samples/c1/Release
+            artifact: c1ImgIo-Win32
 
     defaults:
       run:
