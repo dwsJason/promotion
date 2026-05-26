@@ -1,4 +1,4 @@
-name: Build i256 plugin
+name: Build plugins
 
 on:
   push:
@@ -15,12 +15,26 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: x64
+          - plugin: i256
+            project: i256ImageIo.vcxproj
+            platform: x64
             output_dir: file_io_plugin_samples/i256/x64/Release
             artifact: i256ImgIo-x64
-          - platform: Win32
+          - plugin: i256
+            project: i256ImageIo.vcxproj
+            platform: Win32
             output_dir: file_io_plugin_samples/i256/Release
             artifact: i256ImgIo-Win32
+          - plugin: i16
+            project: i16ImageIo.vcxproj
+            platform: x64
+            output_dir: file_io_plugin_samples/i16/x64/Release
+            artifact: i16ImgIo-x64
+          - plugin: i16
+            project: i16ImageIo.vcxproj
+            platform: Win32
+            output_dir: file_io_plugin_samples/i16/Release
+            artifact: i16ImgIo-Win32
 
     defaults:
       run:
@@ -33,9 +47,9 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      - name: Build i256ImgIo.dll (Release|${{ matrix.platform }})
-        working-directory: file_io_plugin_samples/i256
-        run: msbuild i256ImageIo.vcxproj /m /p:Configuration=Release /p:Platform=${{ matrix.platform }} /p:PlatformToolset=v143
+      - name: Build ${{ matrix.plugin }} (Release|${{ matrix.platform }})
+        working-directory: file_io_plugin_samples/${{ matrix.plugin }}
+        run: msbuild ${{ matrix.project }} /m /p:Configuration=Release /p:Platform=${{ matrix.platform }} /p:PlatformToolset=v143
 
       - name: Show build output
         run: Get-ChildItem -Path "${{ matrix.output_dir }}" -Recurse | Select-Object FullName, Length
