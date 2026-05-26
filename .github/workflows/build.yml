@@ -1,0 +1,50 @@
+name: Build i256 plugin
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: x64
+            output_dir: file_io_plugin_samples/i256/x64/Release
+            artifact: i256ImgIo-x64
+          - platform: Win32
+            output_dir: file_io_plugin_samples/i256/Release
+            artifact: i256ImgIo-Win32
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build i256ImgIo.dll (Release|${{ matrix.platform }})
+        working-directory: file_io_plugin_samples/i256
+        run: msbuild i256ImageIo.vcxproj /m /p:Configuration=Release /p:Platform=${{ matrix.platform }} /p:PlatformToolset=v143
+
+      - name: Show build output
+        run: Get-ChildItem -Path "${{ matrix.output_dir }}" -Recurse | Select-Object FullName, Length
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            ${{ matrix.output_dir }}/*.dll
+            ${{ matrix.output_dir }}/*.pdb
+          if-no-files-found: error
