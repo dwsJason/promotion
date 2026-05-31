@@ -14,36 +14,45 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # outdir is where each project's <OutputFile> actually writes the linked DLL.
+        # c1 and i256 redirect it (..\Release) into the shared file_io_plugin_samples/Release
+        # folder; i16 keeps it under its own per-config folder.
         include:
           - plugin: i256
             project: i256ImageIo.vcxproj
             platform: x64
-            output_dir: file_io_plugin_samples/i256/x64/Release
+            binary: i256ImgIo
+            outdir: file_io_plugin_samples/Release
             artifact: i256ImgIo-x64
           - plugin: i256
             project: i256ImageIo.vcxproj
             platform: Win32
-            output_dir: file_io_plugin_samples/i256/Release
+            binary: i256ImgIo
+            outdir: file_io_plugin_samples/Release
             artifact: i256ImgIo-Win32
           - plugin: i16
             project: i16ImageIo.vcxproj
             platform: x64
-            output_dir: file_io_plugin_samples/i16/x64/Release
+            binary: i16ImgIo
+            outdir: file_io_plugin_samples/i16/x64/Release
             artifact: i16ImgIo-x64
           - plugin: i16
             project: i16ImageIo.vcxproj
             platform: Win32
-            output_dir: file_io_plugin_samples/i16/Release
+            binary: i16ImgIo
+            outdir: file_io_plugin_samples/i16/Release
             artifact: i16ImgIo-Win32
           - plugin: c1
             project: c1ImageIo.vcxproj
             platform: x64
-            output_dir: file_io_plugin_samples/c1/x64/Release
+            binary: c1ImgIo
+            outdir: file_io_plugin_samples/Release
             artifact: c1ImgIo-x64
           - plugin: c1
             project: c1ImageIo.vcxproj
             platform: Win32
-            output_dir: file_io_plugin_samples/c1/Release
+            binary: c1ImgIo
+            outdir: file_io_plugin_samples/Release
             artifact: c1ImgIo-Win32
 
     defaults:
@@ -57,18 +66,23 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
+      # Remove any DLL committed to the repo so a stale copy can never be mistaken
+      # for a fresh build artifact (a failed build won't silently ship the old one).
+      - name: Remove pre-existing binary
+        run: Remove-Item -Force -ErrorAction Ignore "${{ matrix.outdir }}/${{ matrix.binary }}.dll", "${{ matrix.outdir }}/${{ matrix.binary }}.pdb"
+
       - name: Build ${{ matrix.plugin }} (Release|${{ matrix.platform }})
         working-directory: file_io_plugin_samples/${{ matrix.plugin }}
         run: msbuild ${{ matrix.project }} /m /p:Configuration=Release /p:Platform=${{ matrix.platform }} /p:PlatformToolset=v143
 
       - name: Show build output
-        run: Get-ChildItem -Path "${{ matrix.output_dir }}" -Recurse | Select-Object FullName, Length
+        run: Get-ChildItem -Path "file_io_plugin_samples" -Recurse -File | Where-Object { $_.Extension -in '.dll','.pdb','.exe','.lib' } | Select-Object FullName, Length
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
           path: |
-            ${{ matrix.output_dir }}/*.dll
-            ${{ matrix.output_dir }}/*.pdb
+            ${{ matrix.outdir }}/${{ matrix.binary }}.dll
+            ${{ matrix.outdir }}/${{ matrix.binary }}.pdb
           if-no-files-found: error
