@@ -1,0 +1,92 @@
+name: Release plugins
+
+# Publishes the built plugins as a GitHub Release, whose assets are publicly
+# downloadable with no login (unlike Actions artifacts, which require auth and
+# expire after 90 days).
+#
+# Trigger by pushing a tag:        git tag v1.0 && git push origin v1.0
+# Or manually from the Actions tab (workflow_dispatch) with a tag name; if the
+# tag does not exist it is created on the commit the run is started from.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # outdir is where each project's <OutputFile> actually writes the DLL.
+        include:
+          - { plugin: i256, project: i256ImageIo.vcxproj, platform: x64,   binary: i256ImgIo, outdir: file_io_plugin_samples/Release,         artifact: i256ImgIo-x64 }
+          - { plugin: i256, project: i256ImageIo.vcxproj, platform: Win32, binary: i256ImgIo, outdir: file_io_plugin_samples/Release,         artifact: i256ImgIo-Win32 }
+          - { plugin: i16,  project: i16ImageIo.vcxproj,  platform: x64,   binary: i16ImgIo,  outdir: file_io_plugin_samples/i16/x64/Release, artifact: i16ImgIo-x64 }
+          - { plugin: i16,  project: i16ImageIo.vcxproj,  platform: Win32, binary: i16ImgIo,  outdir: file_io_plugin_samples/i16/Release,     artifact: i16ImgIo-Win32 }
+          - { plugin: c1,   project: c1ImageIo.vcxproj,   platform: x64,   binary: c1ImgIo,   outdir: file_io_plugin_samples/Release,         artifact: c1ImgIo-x64 }
+          - { plugin: c1,   project: c1ImageIo.vcxproj,   platform: Win32, binary: c1ImgIo,   outdir: file_io_plugin_samples/Release,         artifact: c1ImgIo-Win32 }
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Remove pre-existing binary
+        run: Remove-Item -Force -ErrorAction Ignore "${{ matrix.outdir }}/${{ matrix.binary }}.dll", "${{ matrix.outdir }}/${{ matrix.binary }}.pdb"
+
+      - name: Build ${{ matrix.plugin }} (Release|${{ matrix.platform }})
+        working-directory: file_io_plugin_samples/${{ matrix.plugin }}
+        run: msbuild ${{ matrix.project }} /m /p:Configuration=Release /p:Platform=${{ matrix.platform }} /p:PlatformToolset=v143
+
+      - name: Package ${{ matrix.artifact }}.zip
+        run: |
+          New-Item -ItemType Directory -Force -Path staging | Out-Null
+          Compress-Archive -Force -DestinationPath "staging/${{ matrix.artifact }}.zip" -Path `
+            "${{ matrix.outdir }}/${{ matrix.binary }}.dll", `
+            "${{ matrix.outdir }}/${{ matrix.binary }}.pdb"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: staging/${{ matrix.artifact }}.zip
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all packages
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: List release assets
+        run: ls -lR dist
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          name: ${{ github.event.inputs.tag || github.ref_name }}
+          generate_release_notes: true
+          files: dist/*.zip
+          fail_on_unmatched_files: true
