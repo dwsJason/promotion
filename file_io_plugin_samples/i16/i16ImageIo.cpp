@@ -1,6 +1,12 @@
 // i16 file I/O plugin shim. Wraps C16File for the Promotion plugin contract.
-
-#pragma pack(1)
+//
+// NOTE: do NOT add a translation-unit-wide `#pragma pack(1)` here. The on-disk
+// structs manage their own packing with push/pop in 16_file.h. A global
+// pack(1) would leak into the C16File *class* definition (it sits after the pop
+// in the header), giving this TU a packed layout while 16_file.cpp compiles the
+// constructor with default alignment -- the two then disagree on member offsets
+// and the object is corrupt on construction. (C16File currently happens to
+// survive because its leading members are ints, but that is luck, not safety.)
 
 #include "i16ImageIo.h"
 #include "16_file.h"

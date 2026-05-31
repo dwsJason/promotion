@@ -1,7 +1,12 @@
 // c1 file I/O plugin shim. Wraps C1File for the Promotion plugin contract.
 // Handles a single raw 32768-byte Apple IIgs SHR screen (.c1).
-
-#pragma pack(1)
+//
+// NOTE: do NOT add a translation-unit-wide `#pragma pack(1)` here. The on-disk
+// structs (C1_Color, C1_FileImage) manage their own packing with push/pop in
+// c1_file.h. A global pack(1) would leak into the C1File *class* definition
+// (it sits after the pop in the header), giving this TU a packed layout while
+// c1_file.cpp compiles the constructor with default alignment -- the two then
+// disagree on member offsets and the object is corrupt on construction.
 
 #include "c1ImageIo.h"
 #include "c1_file.h"
@@ -41,6 +46,18 @@ struct
 	int width;
 	int height;
 } fileHeader;
+
+#if GDEBUG
+volatile bool GWaitAttach = true;
+
+void WaitDebugger()
+{
+	while (GWaitAttach)
+	{
+		// spin
+	}
+}
+#endif
 
 //------------------------------------------------------------------------------
 static void resetError()
@@ -319,6 +336,10 @@ BOOL APIENTRY DllMain(HANDLE /*hModule*/,
                       DWORD ul_reason_for_call,
                       LPVOID /*lpReserved*/)
 {
+#if GDEBUG
+	WaitDebugger();
+#endif
+
 	switch (ul_reason_for_call)
 	{
 		case DLL_PROCESS_ATTACH:
