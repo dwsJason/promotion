@@ -94,18 +94,46 @@ build_one() {
     fi
 
     local DEF=(-DUNICODE -D_UNICODE -DWIN32 -D_WINDOWS "-D${name}ImageIO_EXPORTS")
-    # Search staged headers first (fixed shim), then lzsa include roots so the
-    # plugin's bare includes ("lib.h", "shrink_inmem.h", ...) resolve.
+    # Search staged headers first (fixed shim + patched lzsa lib.h, below), then
+    # the lzsa include roots so the plugin's bare includes ("lib.h",
+    # "shrink_inmem.h", ...) resolve.
     local INC=(-I"$STAGE")
     if [[ "$uses_lzsa" == yes ]]; then
         INC+=(-I"$SD/lzsa/src" -I"$SD/lzsa/src/libdivsufsort/include")
+
+        # lzsa's lib.h includes shrink_streaming.h / expand_streaming.h, which
+        # forward-declare `typedef enum _lzsa_status_t lzsa_status_t;` BEFORE
+        # lib.h defines that enum. A forward-declared unscoped enum is legal C
+        # (so the .c files build) but illegal C++ -- so when a plugin .cpp pulls
+        # in lib.h (i256 does; i16 avoids it), g++ errors. MSVC tolerated it.
+        # Stage a patched lib.h, seen only by the C++ compile (-I"$STAGE" is
+        # first), that moves the enum definition above the includes so it is
+        # complete before the streaming headers reference it. The original lib.h
+        # is untouched, so the C lzsa sources still compile against it.
+        if [[ -f "$SD/lzsa/src/lib.h" ]]; then
+            cp "$SD/lzsa/src/lib.h" "$STAGE/lib.h"
+            python3 - "$STAGE/lib.h" <<'PY'
+import re, sys
+p = sys.argv[1]
+s = open(p).read()
+m = re.search(r'/\*\* High level status.*?\} lzsa_status_t;\n', s, re.S)
+if m:
+    block = m.group(0)
+    s = s.replace(block, '', 1)                                        # remove from original spot
+    s = s.replace('#define _LIB_H\n', '#define _LIB_H\n\n' + block, 1)  # reinsert before the includes
+    open(p, 'w').write(s)
+PY
+        fi
     fi
 
     local OBJS=()
 
+    # Force-include <cstring> on the C++ compiles: i256's 256_file.cpp uses
+    # memcpy without including <string.h>, relying on MSVC headers to pull it in
+    # transitively. mingw's libstdc++ doesn't, so inject it. Harmless elsewhere.
     echo "==> compiling C++ ($shim_cpp, $fmt_cpp)"
-    "$CXX" -O2 -std=c++17 -municode "${DEF[@]}" "${INC[@]}" -c "$STAGE/$shim_cpp" -o "$STAGE/${shim_cpp%.cpp}.o"
-    "$CXX" -O2 -std=c++17 -municode "${DEF[@]}" "${INC[@]}" -c "$STAGE/$fmt_cpp"  -o "$STAGE/${fmt_cpp%.cpp}.o"
+    "$CXX" -O2 -std=c++17 -municode -include cstring "${DEF[@]}" "${INC[@]}" -c "$STAGE/$shim_cpp" -o "$STAGE/${shim_cpp%.cpp}.o"
+    "$CXX" -O2 -std=c++17 -municode -include cstring "${DEF[@]}" "${INC[@]}" -c "$STAGE/$fmt_cpp"  -o "$STAGE/${fmt_cpp%.cpp}.o"
     OBJS+=("$STAGE/${shim_cpp%.cpp}.o" "$STAGE/${fmt_cpp%.cpp}.o")
 
     if [[ "$uses_lzsa" == yes ]]; then
