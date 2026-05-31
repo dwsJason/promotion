@@ -83,15 +83,14 @@ build_one() {
     cp "$HERE"/pluginInterface.h "$STAGE"/ 2>/dev/null || true
     perl -0pi -e 's/#include\s+"\.\.[\\\/]+pluginInterface\.h"/#include "pluginInterface.h"/' "$STAGE/${name}ImageIo.h"
 
-    # i16 ships compat.h, which unconditionally defines static-inline fopen_s /
-    # _wfopen_s "shims for MSVC-only functions". On a Windows target (mingw and
-    # MSVC both define _WIN32) the real CRT already provides those, so the shims
-    # collide (and compat.h's _wfopen_s is a broken stub anyway). Guard the shim
-    # bodies behind #ifndef _WIN32 in the staged copy so Windows builds use the
-    # real, correct CRT functions.
+    # i16 ships compat.h, which provides static-inline fopen_s / sscanf_s shims
+    # for "non-MSVC compilers" (guarded by #ifndef _MSC_VER). mingw is non-MSVC
+    # but DOES target Windows, where the real CRT already declares fopen_s -- so
+    # the shim collides. Retarget the guard to _WIN32 (defined by both mingw and
+    # MSVC) so any Windows build uses the real CRT and only true non-Windows
+    # builds get the shim.
     if [[ -f "$STAGE/compat.h" ]]; then
-        perl -0pi -e 's/(static inline errno_t fopen_s)/#ifndef _WIN32\n$1/;
-                      s/(\n#endif\s*\/\/\s*COMPAT_H)/\n#endif \/\/ !_WIN32$1/' "$STAGE/compat.h"
+        perl -pi -e 's/#ifndef _MSC_VER/#ifndef _WIN32/' "$STAGE/compat.h"
     fi
 
     local DEF=(-DUNICODE -D_UNICODE -DWIN32 -D_WINDOWS "-D${name}ImageIO_EXPORTS")
