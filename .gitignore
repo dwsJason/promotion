@@ -10,3 +10,8 @@ file_io_plugin_samples/i256/Release/
 *.iobj
 *.vpj
 file_io_plugin_samples/simImage/Release/
+
+# macOS cross-compile output (build_c1_macos.sh)
+
+# macOS cross-compile output (build_plugins_macos.sh)
+file_io_plugin_samples/*/build/
